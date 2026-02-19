@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+from email.policy import default
 from pathlib import Path
 from decouple import config, Csv
 from django.utils.text import camel_case_to_spaces
@@ -22,12 +22,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY', default=None)
+if not SECRET_KEY:
+    raise RuntimeError('SECRET_KEY setting not defined')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+ALLOWED_HOSTS = config('ALLOWED_HOSTS',default='localhost,127.0.0.1' , cast=Csv(),)
 
 
 # Application definition
@@ -191,4 +193,4 @@ LOGGING = {
 
 
 
-CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED', cast=Csv())
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED',default='' ,cast=Csv())
