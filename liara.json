@@ -1,0 +1,11 @@
+{
+  "app": "django-online-sjop",
+  "port": 80,
+  "django": {
+    "pythonVersion": "3.12"
+  },
+  "build": {
+    "location": "iran"
+  },
+  "disks": []
+}
