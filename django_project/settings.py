@@ -13,6 +13,8 @@ from email.policy import default
 from pathlib import Path
 from decouple import config, Csv
 from django.utils.text import camel_case_to_spaces
+import dj_database_url
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -82,15 +84,8 @@ WSGI_APPLICATION = "django_project.wsgi.application"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("DB_NAME", default='build-db-name') ,
-        "USER": config("DB_USER", default='build-db-user'),
-        "PASSWORD": config("DB_PASSWORD", default='build-db-password'),
-        "HOST": config("DB_HOST", default='build-db-host'),
-        "PORT": config("DB_PORT", default='build-db-port'),
+    "default":  dj_database_url.config(default=config('DATABASE_URL'))
     }
-}
 
 
 # Password validation
