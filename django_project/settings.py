@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 from decouple import config, Csv
-
+from django.utils.text import camel_case_to_spaces
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -191,3 +191,4 @@ LOGGING = {
 
 
 
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED', cast=Csv())
