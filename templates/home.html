@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% for post in post_list %}  <!-- new -->
+<div class="post-entry">
+ <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2> 
+ <p>{{ post.body }}</p>
+    {% if post.image %}
+        <img src="{{ post.image.url }}" alt="{{ post.title }}">
+    {% endif %}
+</div>
+{% endfor %}
+{% endblock content %}
