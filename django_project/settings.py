@@ -22,14 +22,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default=None)
+SECRET_KEY = 'django-insecure-lmpe9p!70x497)9nv#4#fc%!j#g0&hvjomotjqy=ebkcj)_@4c'
 if not SECRET_KEY:
     raise RuntimeError('SECRET_KEY setting not defined')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS',default='localhost,127.0.0.1' , cast=Csv(),)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS',default='localhost,127.0.0.1,online-sjop.liara.run' , cast=Csv(),)
 
 
 # Application definition
@@ -84,11 +84,11 @@ WSGI_APPLICATION = "django_project.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("DB_NAME"),
-        "USER": config("DB_USER"),
-        "PASSWORD": config("DB_PASSWORD"),
-        "HOST": config("DB_HOST"),
-        "PORT": config("DB_PORT"),
+        "NAME": config("DB_NAME", default='build-db-name') ,
+        "USER": config("DB_USER", default='build-db-user'),
+        "PASSWORD": config("DB_PASSWORD", default='build-db-password'),
+        "HOST": config("DB_HOST", default='build-db-host'),
+        "PORT": config("DB_PORT", default='build-db-port'),
     }
 }
 
@@ -140,11 +140,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 
-LIARA_ENDPOINT_URL = config('LIARA_ENDPOINT_URL')
-LIARA_ACCESS_KEY = config('LIARA_ACCESS_KEY')
-LIARA_SECRET_KEY = config('LIARA_SECRET_KEY')
-LIARA_BUCKET_NAME = config('LIARA_BUCKET_NAME')
-LIARA_MEDIA_LOCATION = config('LIARA_MEDIA_LOCATION')
+LIARA_ENDPOINT_URL = config('LIARA_ENDPOINT_URL', default='')
+LIARA_ACCESS_KEY = config('LIARA_ACCESS_KEY', default='')
+LIARA_SECRET_KEY = config('LIARA_SECRET_KEY', default='')
+LIARA_BUCKET_NAME = config('LIARA_BUCKET_NAME', default='')
+LIARA_MEDIA_LOCATION = config('LIARA_MEDIA_LOCATION', default='')
 
 
 AWS_ACCESS_KEY_ID = LIARA_ACCESS_KEY
@@ -193,4 +193,4 @@ LOGGING = {
 
 
 
-CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED',default='' ,cast=Csv())
+CSRF_TRUSTED_ORIGINS = ['https://django-online-sjop.liara.run/']
