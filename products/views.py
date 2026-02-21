@@ -4,27 +4,29 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework.generics import ListCreateAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.filters import OrderingFilter, SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Products
-from .serializers import ProductsSerializer
-
-# class ProductListCreateAPIView(APIView):
-#     def get(self, request):
-#         qs = Products.objects.all().order_by('created_at')
-#         serializer = ProductsSerializer(qs, many=True)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-#
-#     def post(self, request):
-#         serializer = ProductsSerializer(data=request.data)
-#         if serializer.is_valid():
-#             product = serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+from .models import Products, Category
+from .pagination import StandardResultsSetPagination
+from .serializers import ProductsSerializer, CategorySerializer
 
 
 class ProductListCreateAPIView(ListCreateAPIView):
-    queryset = Products.objects.all()
+    queryset = Products.objects.filter(status=Products.Status.PUBLISHED).order_by('-published_at', '-created_at')
     serializer_class = ProductsSerializer
+
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+
+    filterset_fields = {
+        'price': ['gte', 'lte'],
+        'stock': ['gte', 'lte'],
+        'category': ['exact'],
+    }
+
+    search_fields = ['name', 'description']
+    ordering_fields = ['created_at', 'price', 'stock']
+    ordering = ('created_at',)
 
 
 
@@ -63,3 +65,13 @@ class ProductListCreateAPIView(ListCreateAPIView):
 class ProductDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Products.objects.all()
     serializer_class = ProductsSerializer
+
+
+class CategoryListCreateAPIView(ListCreateAPIView):
+    queryset = Category.objects.all().order_by('title')
+    serializer_class = CategorySerializer
+
+
+class CategoryDetailAPIView(RetrieveUpdateDestroyAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
