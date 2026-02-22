@@ -3,13 +3,21 @@ from django.utils import timezone
 from rest_framework import serializers
 from unicodedata import category
 
-from .models import Products, Category
+from .models import Products, Category, ProductImages
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['id', 'title', 'slug']
+
+
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImages
+        fields = ['id', 'image', 'alt', 'created_at', 'is_primary']
+        read_only_fields = ['created_at']
+
 
 class ProductsSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
@@ -22,7 +30,7 @@ class ProductsSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name', 'price', 'description',
             'stock', 'created_at', 'category', 'category_id',
-            'status', 'published_at'
+            'status', 'published_at', 'images'
         ]
         read_only_fields = ['id', 'created_at', 'published_at']
 

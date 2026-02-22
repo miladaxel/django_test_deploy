@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -7,9 +8,9 @@ from rest_framework.generics import ListCreateAPIView, RetrieveAPIView, UpdateAP
 from rest_framework.filters import OrderingFilter, SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .models import Products, Category
+from .models import Products, Category, ProductImages
 from .pagination import StandardResultsSetPagination
-from .serializers import ProductsSerializer, CategorySerializer
+from .serializers import ProductsSerializer, CategorySerializer, ProductImageSerializer
 
 
 class ProductListCreateAPIView(ListCreateAPIView):
@@ -75,3 +76,22 @@ class CategoryListCreateAPIView(ListCreateAPIView):
 class CategoryDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+
+
+class ProductImageListCreateAPIView(ListCreateAPIView):
+    serializer_class = ProductImageSerializer
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get_queryset(self):
+        product_id = self.kwargs['pk']
+        return ProductImages.objects.filter(product__id=product_id)
+
+    def perform_create(self, serializer):
+        product = get_object_or_404(Products, pk=self.kwargs['pk'])
+        serializer.save(product=product)
+
+
+class ProductImageDestroyAPIView(RetrieveUpdateDestroyAPIView):
+    queryset = ProductImages.objects.all()
+    serializer_class = ProductImageSerializer
+    parser_classes = [MultiPartParser, FormParser]
