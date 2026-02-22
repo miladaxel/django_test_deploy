@@ -10,6 +10,7 @@ class Post(models.Model):
     )
     body = models.TextField()
     image = models.ImageField(blank=True, null=True, upload_to="images/")
+    text = models.TextField(blank=True)
 
     def __str__(self):
         return self.title
