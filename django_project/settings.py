@@ -147,37 +147,44 @@ STATICFILES_DIRS = [BASE_DIR / "static"]  # new
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+USE_S3 = config('USE_S3', default=False, cast=bool)
+
+if USE_S3:
+
+    LIARA_ENDPOINT_URL = config('LIARA_ENDPOINT_URL', default='')
+    LIARA_ACCESS_KEY = config('LIARA_ACCESS_KEY', default='')
+    LIARA_SECRET_KEY = config('LIARA_SECRET_KEY', default='')
+    LIARA_BUCKET_NAME = config('LIARA_BUCKET_NAME', default='')
+    LIARA_MEDIA_LOCATION = config('LIARA_MEDIA_LOCATION', default='')
 
 
-LIARA_ENDPOINT_URL = config('LIARA_ENDPOINT_URL', default='')
-LIARA_ACCESS_KEY = config('LIARA_ACCESS_KEY', default='')
-LIARA_SECRET_KEY = config('LIARA_SECRET_KEY', default='')
-LIARA_BUCKET_NAME = config('LIARA_BUCKET_NAME', default='')
-LIARA_MEDIA_LOCATION = config('LIARA_MEDIA_LOCATION', default='')
+    AWS_ACCESS_KEY_ID = LIARA_ACCESS_KEY
+    AWS_SECRET_ACCESS_KEY = LIARA_SECRET_KEY
+    AWS_STORAGE_BUCKET_NAME = LIARA_BUCKET_NAME
+    AWS_S3_ENDPOINT_URL = LIARA_ENDPOINT_URL
+    AWS_LOCATION = LIARA_MEDIA_LOCATION
+
+    AWS_QUERYSTRING_AUTH = False
+    AWS_DEFAULT_ACL = 'path'
 
 
-AWS_ACCESS_KEY_ID = LIARA_ACCESS_KEY
-AWS_SECRET_ACCESS_KEY = LIARA_SECRET_KEY
-AWS_STORAGE_BUCKET_NAME = LIARA_BUCKET_NAME
-AWS_S3_ENDPOINT_URL = LIARA_ENDPOINT_URL
-AWS_LOCATION = LIARA_MEDIA_LOCATION
-
-AWS_QUERYSTRING_AUTH = False
-AWS_DEFAULT_ACL = 'path'
-
-
-MEDIA_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/{AWS_LOCATION}/"
-MEDIA_ROOT = BASE_DIR / "media"
+    MEDIA_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/{AWS_LOCATION}/"
+    MEDIA_ROOT = BASE_DIR / "media"
 
 
 
 
 
-STORAGES = {
-    "default": {'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
-                'OPTIONS': {'location': AWS_LOCATION}},
-    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"}
-}
+    STORAGES = {
+        "default": {'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
+                    'OPTIONS': {'location': AWS_LOCATION}},
+        "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"}
+    }
+
+
+else:
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / "media"
 
 LOGGING = {
     "version": 1,
