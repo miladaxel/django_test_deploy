@@ -149,6 +149,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 USE_S3 = config('USE_S3', default=False, cast=bool)
 
+STORAGES = {
+        'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage',},
+        "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"}
+    }
+
 if USE_S3:
 
     LIARA_ENDPOINT_URL = config('LIARA_ENDPOINT_URL', default='')
@@ -175,12 +180,8 @@ if USE_S3:
 
 
 
-    STORAGES = {
-        "default": {'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
-                    'OPTIONS': {'location': AWS_LOCATION}},
-        "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"}
-    }
-
+    STORAGES['default'] =  {'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
+                    'OPTIONS': {'location': AWS_LOCATION}}
 
 else:
     MEDIA_URL = '/media/'
