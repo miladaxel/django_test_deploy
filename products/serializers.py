@@ -32,7 +32,7 @@ class ProductsSerializer(serializers.ModelSerializer):
             'stock', 'created_at', 'category', 'category_id',
             'status', 'published_at', 'images'
         ]
-        read_only_fields = ['id', 'created_at', 'published_at']
+        read_only_fields = ['id', 'created_at', 'published_at', 'images']
 
 
     def validate(self, attrs):
