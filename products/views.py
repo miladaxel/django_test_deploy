@@ -11,6 +11,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Products, Category, ProductImages
 from .pagination import StandardResultsSetPagination
 from .serializers import ProductsSerializer, CategorySerializer, ProductImageSerializer
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 
 
 class ProductListCreateAPIView(ListCreateAPIView):
@@ -18,6 +19,11 @@ class ProductListCreateAPIView(ListCreateAPIView):
     serializer_class = ProductsSerializer
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAdminUser()]
 
     filterset_fields = {
         'price': ['gte', 'lte'],
@@ -67,6 +73,10 @@ class ProductDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Products.objects.all()
     serializer_class = ProductsSerializer
 
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAdminUser()]
 
 class CategoryListCreateAPIView(ListCreateAPIView):
     queryset = Category.objects.all().order_by('title')
@@ -90,8 +100,24 @@ class ProductImageListCreateAPIView(ListCreateAPIView):
         product = get_object_or_404(Products, pk=self.kwargs['pk'])
         serializer.save(product=product)
 
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAdminUser()]
+
 
 class ProductImageDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = ProductImages.objects.all()
     serializer_class = ProductImageSerializer
     parser_classes = [MultiPartParser, FormParser]
+    permission_classes = [IsAdminUser]
+
+class MeApiView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        return Response({
+            'id': request.user.id,
+            'username': request.user.username,
+            'is_staff': request.user.is_staff,
+            'is_superuser': request.user.is_superuser,
+        })
