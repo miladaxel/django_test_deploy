@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.generics import ListCreateAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.filters import OrderingFilter, SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
+from urllib3 import request
 
 from .models import Products, Category, ProductImages
 from .pagination import StandardResultsSetPagination
@@ -15,10 +16,18 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 
 
 class ProductListCreateAPIView(ListCreateAPIView):
-    queryset = Products.objects.filter(status=Products.Status.PUBLISHED).order_by('-published_at', '-created_at')
+
     serializer_class = ProductsSerializer
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+
+    def get_queryset(self):
+        qs = (Products.objects.all().select_related('category').prefetch_related('images'))
+
+        if self.request.user.is_staff:
+            return qs
+        else:
+            return qs.filter(status=Products.Status.PUBLISHED)
 
     def get_permissions(self):
         if self.request.method == 'GET':
@@ -70,8 +79,15 @@ class ProductListCreateAPIView(ListCreateAPIView):
 
 
 class ProductDetailAPIView(RetrieveUpdateDestroyAPIView):
-    queryset = Products.objects.all()
     serializer_class = ProductsSerializer
+
+    def get_queryset(self):
+        qs = (Products.objects.all().select_related('category').prefetch_related('images').order_by('-id'))
+
+        if self.request.user.is_staff:
+            return qs
+        else:
+            return qs.filter(status=Products.Status.PUBLISHED)
 
     def get_permissions(self):
         if self.request.method == 'GET':
@@ -110,7 +126,11 @@ class ProductImageDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = ProductImages.objects.all()
     serializer_class = ProductImageSerializer
     parser_classes = [MultiPartParser, FormParser]
-    permission_classes = [IsAdminUser]
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAdminUser()]
 
 class MeApiView(APIView):
     permission_classes = [IsAuthenticated]
