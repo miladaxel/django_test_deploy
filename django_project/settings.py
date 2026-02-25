@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'django_filters',
     'rest_framework_simplejwt',
+    'cart',
 
 ]
 
