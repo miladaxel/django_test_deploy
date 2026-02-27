@@ -74,7 +74,7 @@ class CartItemDetailView(APIView):
 
     def get(self, request, pk):
         cart = get_or_create_cart(request.user)
-        item = get_object_or_404(CartItem, pk=pk)
+        item = get_object_or_404(CartItem, pk=pk, cart=cart)
         return Response(CartItemSerializer(item).data, status=status.HTTP_200_OK)
 
     def get_serializer(self, *args, **kwargs):

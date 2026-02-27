@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "blog",  # new
     'storages',
     'products',
+    'orders',
     'rest_framework',
     'corsheaders',
     'drf_spectacular',
